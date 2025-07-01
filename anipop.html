@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>长垣县单词消消乐 - 六年级</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: 'Comic Sans MS', '楷体', 'Arial Rounded MT Bold', sans-serif;
+            touch-action: manipulation;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5d7db, #f7efd9);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 背景装饰元素 */
+        body::before, body::after {
+            content: "";
+            position: fixed;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        body::before {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -100px;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+        }
+
+        body::after {
+            width: 250px;
+            height: 250px;
+            bottom: -100px;
+            left: -80px;
+            background: linear-gradient(45deg, #a1c4fd, #c2e9fb);
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 标题区域 */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #ff6b6b;
+            font-size: 42px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(to right, #ff9a9e, #a1c4fd, #a8d8ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 0 20px;
+            display: inline-block;
+        }
+
+        .header h2 {
+            color: #5e6b72;
+            font-size: 22px;
+            font-weight: normal;
+            margin-top: 5px;
+        }
+
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            width: 80%;
+            height: 6px;
+            background: repeating-linear-gradient(45deg, #ff9a9e, #ff9a9e 10px, #a1c4fd 10px, #a1c4fd 20px);
+            border-radius: 3px;
+        }
+
+        /* 游戏控制区域 */
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .timer, .score, .restart {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            border-radius: 50px;
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+            font-size: 22px;
+            z-index: 2;
+        }
+
+        .timer {
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+            color: white;
+            min-width: 200px;
+        }
+
+        .score {
+            background: linear-gradient(45deg, #a1c4fd, #c2e9fb);
+            color: white;
+            min-width: 180px;
+            justify-content: center;
+        }
+
+        .restart {
+            background: linear-gradient(45deg, #4ecdc4, #4ecdc4, #88d3ce);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            justify-content: center;
+            min-width: 180px;
+        }
+
+        .restart:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .restart:active {
+            transform: translateY(1px);
+        }
+
+        .timer i, .score i, .restart i {
+            margin-right: 12px;
+            font-size: 26px;
+        }
+
+        /* 游戏说明 */
+        .instructions {
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 3px solid #e9ecef;
+        }
+
+        .instructions h3 {
+            color: #5e6b72;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .instructions p {
+            color: #6c757d;
+            font-size: 18px;
+            line-height: 1.6;
+            margin: 8px 0;
+        }
+
+        /* 游戏板区域 */
+        .game-board {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            min-height: 420px;
+        }
+
+        .words-section, .meanings-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 15px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #e9ecef;
+        }
+
+        .words-section::before, .meanings-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #ff9a9e, #a1c4fd, #4ecdc4);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .words-section h2, .meanings-section h2 {
+            margin: 10px 0 25px;
+            color: #495057;
+            font-size: 28px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .words-section h2::after, .meanings-section h2::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, #ff9a9e, #a1c4fd);
+            border-radius: 2px;
+        }
+
+        .cards-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            height: 100%;
+            overflow-y: auto;
+            padding: 0 10px;
+        }
+
+        .word-card, .meaning-card {
+            width: 100%;
+            padding: 22px 15px;
+            border-radius: 20px;
+            font-size: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .word-card {
+            background: linear-gradient(145deg, #d4ffea, #a7ffe8);
+            color: #1c5739;
+        }
+
+        .meaning-card {
+            background: linear-gradient(145deg, #e0c3fc, #b9fffc);
+            color: #4e3e6d;
+        }
+
+        .word-card.selected, .meaning-card.selected {
+            transform: scale(1.03);
+            box-shadow: 0 0 0 4px rgba(255, 204, 103, 0.8), 0 8px 20px rgba(0,0,0,0.15);
+            border: 2px solid #ffcc67;
+            z-index: 10;
+        }
+
+        .word-card:hover, .meaning-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+            z-index: 2;
+        }
+
+        /* 动画效果 */
+        .correct {
+            animation: correct 0.8s ease-out forwards;
+        }
+
+        .incorrect {
+            animation: incorrect 0.7s ease-out forwards;
+        }
+
+        @keyframes correct {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); background: #4ce899; box-shadow: 0 0 30px rgba(76, 232, 153, 0.7); }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        @keyframes incorrect {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-12px); }
+            40% { transform: translateX(12px); background: #ffecec; }
+            60% { transform: translateX(-8px); }
+            80% { transform: translateX(8px); }
+            100% { transform: translateX(0); background: #ffdbdb; box-shadow: 0 0 0 3px #ff6b6b; }
+        }
+
+        .feedback {
+            position: absolute;
+            font-size: 60px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 20;
+        }
+
+        /* 结束消息 */
+        .success-message, .game-over {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: rgba(255, 255, 255, 0.98);
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            text-align: center;
+            z-index: 100;
+            width: 90%;
+            max-width: 600px;
+            animation: popIn 0.5s forwards;
+            display: none;
+        }
+
+        .success-message::before, .game-over::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: linear-gradient(90deg, #ff9a9e, #a1c4fd, #4ecdc4);
+            border-radius: 10px 10px 0 0;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .success-message h2, .game-over h2 {
+            font-size: 46px;
+            margin-bottom: 30px;
+            color: #ff6b6b;
+            text-shadow: 2px 2px 3px rgba(0,0,0,0.1);
+        }
+
+        .success-message h2 i, .game-over h2 i {
+            font-size: 48px;
+            margin-right: 15px;
+        }
+
+        .success-message p, .game-over p {
+            font-size: 26px;
+            margin: 20px 0;
+            color: #495057;
+            line-height: 1.6;
+        }
+
+        .success-message .score-display, .game-over .score-display {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4da6ff;
+            margin: 25px 0;
+        }
+
+        .success-message button, .game-over button {
+            background: linear-gradient(45deg, #ff9a9e, #a1c4fd);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .success-message button:hover, .game-over button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.25);
+        }
+
+        /* 长垣特色元素 */
+        .local-theme {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #ff9a9e, #a1c4fd);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 18px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            z-index: 5;
+        }
+
+        .local-theme i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .game-board {
+                flex-direction: column;
+                min-height: auto;
+            }
+
+            .words-section, .meanings-section {
+                width: 100%;
+            }
+
+            .game-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .timer, .score, .restart {
+                width: 100%;
+                min-width: auto;
+                justify-content: center;
+            }
+
+            .header h1 {
+                font-size: 36px;
+            }
+
+            .header h2 {
+                font-size: 20px;
+            }
+
+            .success-message, .game-over {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="local-theme">
+    <i class="fas fa-landmark"></i> 长垣县 · 六年级
+</div>
+
+<div class="container">
+    <div class="header">
+        <h1>单词消消乐</h1>
+        <h2>人教版六年级英语单词挑战</h2>
+    </div>
+
+    <div class="game-controls">
+        <div class="timer">
+            <i class="fas fa-clock"></i>
+            倒计时: <span id="time">60</span>秒
+        </div>
+
+        <div class="score">
+            <i class="fas fa-star"></i>
+            分数: <span id="score">0</span>
+        </div>
+
+        <div class="restart" id="restartBtn">
+            <i class="fas fa-redo"></i>
+            重新挑战
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h3><i class="fas fa-info-circle"></i> 游戏规则</h3>
+        <p>点击左侧英语单词和右侧中文释义进行匹配！</p>
+        <p>匹配正确：单词消失并<strong>得10分</strong></p>
+        <p>匹配错误：<strong>扣2分</strong>并提示错误</p>
+        <p>在1分钟内尽量获取更高分数！</p>
+    </div>
+
+    <div class="game-board">
+        <div class="words-section">
+            <h2><i class="fas fa-font"></i> 英语单词</h2>
+            <div id="wordsContainer" class="cards-container"></div>
+        </div>
+
+        <div class="meanings-section">
+            <h2><i class="fas fa-language"></i> 中文释义</h2>
+            <div id="meaningsContainer" class="cards-container"></div>
+        </div>
+    </div>
+</div>
+
+<div id="successMessage" class="success-message">
+    <h2><i class="fas fa-trophy"></i> 恭喜你！</h2>
+    <p>你成功完成了单词挑战！</p>
+    <p>在有限的时间内匹配了所有单词！</p>
+    <p class="score-display">最终得分: <span id="finalScore">0</span> 分</p>
+    <button id="playAgainBtn">再玩一次</button>
+</div>
+
+<div id="gameOverMessage" class="game-over">
+    <h2><i class="fas fa-hourglass-end"></i> 时间到！</h2>
+    <p>很遗憾，时间不够了！</p>
+    <p>你匹配了 <span id="pairsMatched">0</span> 对单词</p>
+    <p class="score-display">最终得分: <span id="overScore">0</span> 分</p>
+    <button id="retryBtn">重新挑战</button>
+</div>
+
+<div id="feedback" class="feedback">✓</div>
+
+<script>
+    // 单词数据 - 针对长垣县六年级学生
+    const words = [
+        { word: "beautiful", meaning: "美丽的" },
+        { word: "countryside", meaning: "乡村" },
+        { word: "library", meaning: "图书馆" },
+        { word: "interesting", meaning: "有趣的" },
+        { word: "mountain", meaning: "山" },
+        { word: "hospital", meaning: "医院" },
+        { word: "important", meaning: "重要的" },
+        { word: "beginning", meaning: "开始" },
+        { word: "different", meaning: "不同的" },
+        { word: "difficult", meaning: "困难的" },
+        { word: "exciting", meaning: "令人兴奋的" },
+        { word: "exercise", meaning: "锻炼" },
+        { word: "favourite", meaning: "最喜欢的" },
+        { word: "holiday", meaning: "假期" },
+        { word: "museum", meaning: "博物馆" },
+        { word: "science", meaning: "科学" },
+        { word: "together", meaning: "一起" },
+        { word: "university", meaning: "大学" },
+        { word: "usually", meaning: "通常" },
+        { word: "vegetable", meaning: "蔬菜" }
+    ];
+
+    // 游戏状态
+    const gameState = {
+        wordsList: [],
+        meaningsList: [],
+        selectedWord: null,
+        selectedMeaning: null,
+        matchedPairs: 0,
+        score: 0,
+        time: 60,
+        timerId: null,
+        gameRunning: false
+    };
+
+    // DOM元素引用
+    const elements = {
+        wordsContainer: document.getElementById('wordsContainer'),
+        meaningsContainer: document.getElementById('meaningsContainer'),
+        timeDisplay: document.getElementById('time'),
+        scoreDisplay: document.getElementById('score'),
+        restartBtn: document.getElementById('restartBtn'),
+        playAgainBtn: document.getElementById('playAgainBtn'),
+        retryBtn: document.getElementById('retryBtn'),
+        successMessage: document.getElementById('successMessage'),
+        gameOverMessage: document.getElementById('gameOverMessage'),
+        finalScore: document.getElementById('finalScore'),
+        overScore: document.getElementById('overScore'),
+        pairsMatched: document.getElementById('pairsMatched'),
+        feedback: document.getElementById('feedback')
+    };
+
+    // 初始化游戏
+    function initGame() {
+        // 重置游戏状态
+        gameState.matchedPairs = 0;
+        gameState.score = 0;
+        gameState.time = 60;
+        gameState.gameRunning = true;
+
+        // 复制并打乱单词和意思
+        const shuffledWords = [...words].sort(() => Math.random() - 0.5);
+        const shuffledMeanings = [...words].sort(() => Math.random() - 0.5);
+
+        gameState.wordsList = shuffledWords;
+        gameState.meaningsList = shuffledMeanings;
+
+        // 渲染游戏界面
+        renderGameBoard();
+
+        // 更新显示
+        updateDisplays();
+
+        // 开始倒计时
+        startTimer();
+
+        // 隐藏游戏结束消息
+        elements.successMessage.style.display = 'none';
+        elements.gameOverMessage.style.display = 'none';
+    }
+
+    // 渲染游戏板
+    function renderGameBoard() {
+        elements.wordsContainer.innerHTML = '';
+        elements.meaningsContainer.innerHTML = '';
+
+        // 添加单词卡片
+        gameState.wordsList.forEach((item, index) => {
+            if (!item) return;
+
+            const card = createCard('word', item.word, index);
+            elements.wordsContainer.appendChild(card);
+        });
+
+        // 添加意思卡片
+        gameState.meaningsList.forEach((item, index) => {
+            if (!item) return;
+
+            const card = createCard('meaning', item.meaning, index);
+            elements.meaningsContainer.appendChild(card);
+        });
+    }
+
+    // 创建卡片
+    function createCard(type, text, index) {
+        const card = document.createElement('div');
+        card.className = type === 'word' ? 'word-card' : 'meaning-card';
+        card.textContent = text;
+        card.dataset.index = index;
+
+        card.addEventListener('click', () => {
+            if (type === 'word') selectWord(card, index);
+            else selectMeaning(card, index);
+        });
+
+        return card;
+    }
+
+    // 选择单词
+    function selectWord(card, index) {
+        if (!gameState.gameRunning || gameState.wordsList[index] === null) return;
+
+        // 取消之前的选择
+        if (gameState.selectedWord) {
+            gameState.selectedWord.classList.remove('selected');
+        }
+
+        // 设置新选择
+        gameState.selectedWord = card;
+        card.classList.add('selected');
+
+        // 如果意思已经被选择，检查匹配
+        if (gameState.selectedMeaning) {
+            checkMatch();
+        }
+    }
+
+    // 选择意思
+    function selectMeaning(card, index) {
+        if (!gameState.gameRunning || gameState.meaningsList[index] === null) return;
+
+        // 取消之前的选择
+        if (gameState.selectedMeaning) {
+            gameState.selectedMeaning.classList.remove('selected');
+        }
+
+        // 设置新选择
+        gameState.selectedMeaning = card;
+        card.classList.add('selected');
+
+        // 如果单词已经被选择，检查匹配
+        if (gameState.selectedWord) {
+            checkMatch();
+        }
+    }
+
+    // 检查匹配
+    function checkMatch() {
+        const wordIndex = parseInt(gameState.selectedWord.dataset.index);
+        const meaningIndex = parseInt(gameState.selectedMeaning.dataset.index);
+
+        const wordItem = gameState.wordsList[wordIndex];
+        const meaningItem = gameState.meaningsList[meaningIndex];
+
+        // 检查是否匹配（通过单词原文）
+        if (wordItem && meaningItem && wordItem.word === meaningItem.word) {
+            // 匹配正确
+            gameState.matchedPairs++;
+            gameState.score += 10;
+
+            // 视觉反馈 - 正确
+            showFeedback('correct', gameState.selectedWord);
+            showFeedback('correct', gameState.selectedMeaning);
+
+            // 将匹配项标记为正确
+            gameState.selectedWord.classList.add('correct');
+            gameState.selectedMeaning.classList.add('correct');
+
+            // 从数组中移除匹配的项
+            gameState.wordsList[wordIndex] = null;
+            gameState.meaningsList[meaningIndex] = null;
+
+            // 检查游戏是否完成
+            setTimeout(() => {
+                if (gameState.matchedPairs === words.length) {
+                    gameComplete();
+                }
+            }, 800);
+        } else {
+            // 匹配错误
+            gameState.score = Math.max(0, gameState.score - 2);
+
+            // 视觉反馈 - 错误
+            showFeedback('incorrect', gameState.selectedWord);
+            showFeedback('incorrect', gameState.selectedMeaning);
+
+            gameState.selectedWord.classList.add('incorrect');
+            gameState.selectedMeaning.classList.add('incorrect');
+
+            setTimeout(() => {
+                gameState.selectedWord.classList.remove('incorrect');
+                gameState.selectedMeaning.classList.remove('incorrect');
+            }, 1000);
+        }
+
+        // 更新显示
+        updateDisplays();
+
+        // 清除选择
+        setTimeout(() => {
+            if (gameState.selectedWord) gameState.selectedWord.classList.remove('selected');
+            if (gameState.selectedMeaning) gameState.selectedMeaning.classList.remove('selected');
+            gameState.selectedWord = null;
+            gameState.selectedMeaning = null;
+        }, 800);
+    }
+
+    // 显示反馈
+    function showFeedback(type, element) {
+        elements.feedback.textContent = type === 'correct' ? '✓' : '✗';
+        elements.feedback.style.color = type === 'correct' ? '#4ce899' : '#ff6b6b';
+
+        const rect = element.getBoundingClientRect();
+        elements.feedback.style.left = `${rect.left + rect.width/2}px`;
+        elements.feedback.style.top = `${rect.top + rect.height/2}px`;
+        elements.feedback.style.opacity = '1';
+        elements.feedback.style.fontSize = type === 'correct' ? '70px' : '60px';
+
+        setTimeout(() => {
+            elements.feedback.style.opacity = '0';
+        }, 600);
+    }
+
+    // 更新显示
+    function updateDisplays() {
+        elements.scoreDisplay.textContent = gameState.score;
+        elements.timeDisplay.textContent = gameState.time;
+
+        // 更新时间显示颜色
+        if (gameState.time <= 10) {
+            elements.timeDisplay.style.color = '#ff6b6b';
+        }
+    }
+
+    // 启动计时器
+    function startTimer() {
+        clearInterval(gameState.timerId);
+
+        gameState.timerId = setInterval(() => {
+            if (!gameState.gameRunning) return;
+
+            gameState.time--;
+            updateDisplays();
+
+            // 检查时间结束
+            if (gameState.time <= 0) {
+                clearInterval(gameState.timerId);
+                gameState.gameRunning = false;
+                gameOver();
+            }
+        }, 1000);
+    }
+
+    // 游戏完成
+    function gameComplete() {
+        gameState.gameRunning = false;
+        clearInterval(gameState.timerId);
+
+        elements.finalScore.textContent = gameState.score;
+        elements.successMessage.style.display = 'block';
+    }
+
+    // 游戏结束
+    function gameOver() {
+        gameState.gameRunning = false;
+        clearInterval(gameState.timerId);
+
+        elements.overScore.textContent = gameState.score;
+        elements.pairsMatched.textContent = gameState.matchedPairs;
+        elements.gameOverMessage.style.display = 'block';
+    }
+
+    // 事件监听
+    elements.restartBtn.addEventListener('click', initGame);
+    elements.playAgainBtn.addEventListener('click', initGame);
+    elements.retryBtn.addEventListener('click', initGame);
+
+    // 初始运行
+    document.addEventListener('DOMContentLoaded', initGame);
+</script>
+</body>
+</html>
